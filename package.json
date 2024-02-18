@@ -1,5 +1,5 @@
 {
-  "name": "libp2p-browser-debug-site",
+  "name": "libp2p-pubsub-browser-test",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
