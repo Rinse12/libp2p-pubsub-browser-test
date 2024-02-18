@@ -1,0 +1,21 @@
+{
+  "name": "libp2p-browser-debug-site",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@chainsafe/libp2p-gossipsub": "12.0.0",
+    "@chainsafe/libp2p-noise": "15.0.0",
+    "@chainsafe/libp2p-yamux": "6.0.2",
+    "@libp2p/autonat": "1.0.12",
+    "@libp2p/bootstrap": "10.0.15",
+    "@libp2p/circuit-relay-v2": "1.0.15",
+    "@libp2p/identify": "1.0.14",
+    "@libp2p/kad-dht": "12.0.7",
+    "@libp2p/mplex": "10.0.15",
+    "@libp2p/peer-id-factory": "4.0.6",
+    "@libp2p/webrtc": "4.0.19",
+    "@libp2p/webtransport": "4.0.19",
+    "libp2p": "1.2.3"
+}
+}
