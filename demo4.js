@@ -76,66 +76,60 @@ const logEvents = (nodeName, node) => {
 
 (async () => {
   try {
-    const createBrowserNode = async () => {
-      const peerId = await createEd25519PeerId();
-      const libP2pNode = await createLibp2p({
-        // can't listen using webtransport in libp2p js
-        // addresses: {listen: []},
+    const peerId = await createEd25519PeerId();
 
-        peerDiscovery: [bootstrap(bootstrapConfig)],
-        peerId,
-        transports: [
-          webTransport(),
-          webRTCDirect(),
-          circuitRelayTransport(), // TODO: test this later, probably need to upgrade libp2p
-        ],
-        streamMuxers: [yamux(), mplex()],
-        connectionEncryption: [noise()],
-        connectionGater: {
-          // not sure why needed, doesn't connect without it
-          // denyDialMultiaddr: async () => false
-        },
-        connectionManager: {
-          maxConnections: 10,
-          minConnections: 5,
-        },
-        services: {
-          identify: identifyService(), // required for peer discovery of pubsub
-          dht: kadDHT({}), // p2p peer discovery
-          pubsub: gossipsub({
-            allowPublishToZeroPeers: true,
-          }),
-          nat: autoNAT(),
-        },
-      });
-      logEvents("node2", libP2pNode);
-      return libP2pNode;
-    };
-    const node2 = await createNode2();
+    const browserNode = await createLibp2p({
+      // can't listen using webtransport in libp2p js
+      // addresses: {listen: []},
+
+      peerDiscovery: [bootstrap(bootstrapConfig)],
+      peerId,
+      transports: [
+        webTransport(),
+        webRTCDirect(),
+        circuitRelayTransport(), // TODO: test this later, probably need to upgrade libp2p
+      ],
+      streamMuxers: [yamux(), mplex()],
+      connectionEncryption: [noise()],
+      connectionGater: {
+        // not sure why needed, doesn't connect without it
+        // denyDialMultiaddr: async () => false
+      },
+      connectionManager: {
+        maxConnections: 10,
+        minConnections: 5,
+      },
+      services: {
+        identify: identifyService(), // required for peer discovery of pubsub
+        dht: kadDHT({}), // p2p peer discovery
+        pubsub: gossipsub({
+          allowPublishToZeroPeers: true,
+        }),
+        nat: autoNAT(),
+      },
+    });
+    logEvents("browser-node", libP2pNode);
 
     // log addresses
-    log("node2", node2.getMultiaddrs());
+    log("browser-node", browserNode.getMultiaddrs());
 
-    const topic = "demo";
+    const topic = "sub-test-123"; // for testing purposes
 
     // sub
-    node2.services.pubsub.addEventListener("message", (evt) => {
+    browserNode.services.pubsub.addEventListener("message", (evt) => {
       log(
-        `node2: ${evt.detail.from}: ${uint8ArrayToString(
+        `browserNode: ${evt.detail.from}: ${uint8ArrayToString(
           evt.detail.data
         )} on topic ${evt.detail.topic}`
       );
     });
-    await node2.services.pubsub.subscribe(topic);
+    browserNode.services.pubsub.subscribe(topic);
 
-    // pub
-    setInterval(() => {
-      node2.services.pubsub
-        .publish(topic, uint8ArrayFromString("demo message from node 2"))
-        .catch((err) => {
-          console.error(err);
-        });
-    }, 1000);
+    const res = await browserNode.services.pubsub.publish(
+      topic,
+      uint8ArrayFromString("hello from browser p2p")
+    );
+    log(`browser node published to topic (${topic}) and result is `, res);
   } catch (e) {
     log(e);
     log(e.stack);
