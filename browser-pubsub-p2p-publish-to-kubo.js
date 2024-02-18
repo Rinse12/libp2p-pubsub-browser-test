@@ -1,17 +1,17 @@
 import { createLibp2p } from "libp2p";
-import { peerIdFromString } from "@libp2p/peer-id";
-import { multiaddr } from "@multiformats/multiaddr";
 import { gossipsub } from "@chainsafe/libp2p-gossipsub";
 import { webTransport } from "@libp2p/webtransport";
 import { mplex } from "@libp2p/mplex";
 import { yamux } from "@chainsafe/libp2p-yamux";
 import { noise } from "@chainsafe/libp2p-noise";
-import { fromString as uint8ArrayFromString } from "uint8arrays/from-string";
 import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 import { bootstrap } from "@libp2p/bootstrap";
-import { identifyService } from "libp2p/identify";
+import { identify as identifyService } from "@libp2p/identify";
 import { kadDHT } from "@libp2p/kad-dht";
-
+import { webRTCDirect } from "@libp2p/webrtc";
+import { createEd25519PeerId } from "@libp2p/peer-id-factory";
+import { circuitRelayTransport } from '@libp2p/circuit-relay-v2'
+import { autoNAT } from '@libp2p/autonat'
 // From https://github.com/ipfs/helia/blob/main/packages/helia/src/utils/bootstrappers.ts
 const bootstrapConfig = {
   list: [
@@ -108,7 +108,7 @@ const logEvents = (nodeName, node) => {
         nat: autoNAT(),
       },
     });
-    logEvents("browser-node", libP2pNode);
+    logEvents("browser-node", browserNode);
 
     // log addresses
     log("browser-node", browserNode.getMultiaddrs());
